@@ -1,6 +1,6 @@
 import { createConfig, http, useReadContract, useWriteContract, useWatchContractEvent } from "wagmi";
-import { goerli, mainnet, sepolia, polygon } from "wagmi/chains";
-import { WagmiWeb3ConfigProvider, MetaMask, Goerli, Sepolia, WalletConnect, Polygon } from "@ant-design/web3-wagmi";
+import { goerli, mainnet, sepolia, polygon, hardhat } from "wagmi/chains";
+import { WagmiWeb3ConfigProvider, MetaMask, Goerli, Sepolia, Hardhat, WalletConnect, Polygon } from "@ant-design/web3-wagmi";
 import { Address, NFTCard, Connector, ConnectButton, useAccount, useProvider } from "@ant-design/web3";
 import { injected, walletConnect } from "wagmi/connectors";
 import { Button, message } from 'antd'
@@ -8,10 +8,11 @@ import { parseEther } from 'viem'
 
 
 const config = createConfig({
-  chains: [mainnet, polygon],
+  chains: [mainnet, polygon, hardhat],
   transports: {
     [mainnet.id]: http(),
     [polygon.id]: http(),
+    [hardhat.id]: http("http://127.0.0.1:8545"),
     // [sepolia.id]: http(),
     // [mainnet.id]: http("https://eth-mainnet.g.alchemy.com/v2/4fjyGSbuZ7RgldDMpvSKmlv9cUAziQFm")
   },
@@ -19,12 +20,12 @@ const config = createConfig({
     injected({
       target: 'metaMask' as any
     }),
-    walletConnect({
-      // 去官方申请自己的应用ID
-      //  https://cloud.walletconnect.com/
-      projectId: 'c07c0051c2055890eade3556618e38a6',
-      showQrModal: true
-    })
+    // walletConnect({
+    //   // 去官方申请自己的应用ID
+    //   //  https://cloud.walletconnect.com/
+    //   projectId: 'c07c0051c2055890eade3556618e38a6',
+    //   showQrModal: true
+    // })
   ]
 
 })
@@ -40,6 +41,11 @@ const contractInfo = [
     name: "Polygon",
     contractAddress: "0x418325c3979b7f8a17678ec2463a74355bdbe72c",
   },
+  {
+    id: hardhat.id,
+    name: "Hardhat",
+    contractAddress: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  }
 ]
 
 const CallTest = () => {
@@ -142,7 +148,8 @@ const CallTest = () => {
 
 
 export default function Web3() {
-  return <WagmiWeb3ConfigProvider config={ config } wallets={ [MetaMask(), WalletConnect()] } chains={[Polygon]}>
+  // return <WagmiWeb3ConfigProvider config={ config } wallets={ [MetaMask(), WalletConnect()] } chains={[Polygon, Hardhat]}>
+  return <WagmiWeb3ConfigProvider config={ config } wallets={ [MetaMask()] } chains={[Polygon, Hardhat]}>
     <Address format address="0xEcd0D12E21805803f70de03B72B1C162dB0898d9" />
     <NFTCard
       address="0xEcd0D12E21805803f70de03B72B1C162dB0898d9"
